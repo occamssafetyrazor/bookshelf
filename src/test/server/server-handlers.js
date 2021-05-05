@@ -204,7 +204,12 @@ function requestMatchesFailConfig(req) {
   return false
 }
 
-const getToken = req => req.headers.get('Authorization')?.replace('Bearer ', '')
+const getToken = req => {
+
+  const token = req.headers.get('Authorization')?.replace('Bearer ', '')
+  // console.log(`token inside getToken: ${token}`)
+  return token
+}
 
 async function getUser(req) {
   const token = getToken(req)
