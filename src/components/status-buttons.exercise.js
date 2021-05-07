@@ -51,24 +51,34 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
 
 function StatusButtons({user, book}) {
   // 🐨 call useQuery here to get the listItem (if it exists)
-  const {data, isLoading, status, error} = useQuery('list-items', ()=>client(
-    'list-items', {token: user.token}));
-  console.log(`queryInfo in status-buttons: ${JSON.stringify(data)}`);
+  const {listItems} = useQuery({
+    queryKey: 'list-items',
+  queryFn: ()=>
+    client('list-items',
+      {token: user.token})
+  .then((data)=>data.listItems)}
+    );
+  console.log(`listItems in status-buttons: ${JSON.stringify(listItems)}`);
   // queryKey should be 'list-items'
   // queryFn should call the list-items endpoint
 
   // 🐨 search through the listItems you got from react-query and find the
   // one with the right bookId.
   let listItem = null
-  if (status === "success"){
-    if(data.length > 0){
-      listItem = data.find((queriedBook)=>(
-      book.id === queriedBook.id));
-      console.log(`listItem found in status-buttons: ${listItem}`);
-    } else{
-      console.log(`data.length is 0 in status-buttons`);
-    }
+  if(listItems){
+    listItem = listItems.find((li)=>li.bookId === book.id)
+    console.log(`listItem found in status-buttons: ${listItem}`)
   }
+
+  // if (status === "success"){
+  //   if(data.length > 0){
+  //     listItem = data.find((queriedBook)=>(
+  //     book.id === queriedBook.id));
+  //     console.log(`listItem found in status-buttons: ${listItem}`);
+  //   } else{
+  //     console.log(`data.length is 0 in status-buttons`);
+  //   }
+  // }
 
 
   // 💰 for all the mutations below, if you want to get the list-items cache
