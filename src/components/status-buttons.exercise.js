@@ -11,7 +11,9 @@ import {
 } from 'react-icons/fa'
 import Tooltip from '@reach/tooltip'
 // 🐨 you'll need useQuery, useMutation, and queryCache from 'react-query'
+import {useQuery} from 'react-query';
 // 🐨 you'll also need client from 'utils/api-client'
+import {client} from '../utils/api-client'
 import {useAsync} from 'utils/hooks'
 import * as colors from 'styles/colors'
 import {CircleButton, Spinner} from './lib'
@@ -49,12 +51,25 @@ function TooltipButton({label, highlight, onClick, icon, ...rest}) {
 
 function StatusButtons({user, book}) {
   // 🐨 call useQuery here to get the listItem (if it exists)
+  const {data, isLoading, status, error} = useQuery('list-items', ()=>client(
+    'list-items', {token: user.token}));
+  console.log(`queryInfo in status-buttons: ${JSON.stringify(data)}`);
   // queryKey should be 'list-items'
   // queryFn should call the list-items endpoint
 
   // 🐨 search through the listItems you got from react-query and find the
   // one with the right bookId.
-  const listItem = null
+  let listItem = null
+  if (status === "success"){
+    if(data.length > 0){
+      listItem = data.find((queriedBook)=>(
+      book.id === queriedBook.id));
+      console.log(`listItem found in status-buttons: ${listItem}`);
+    } else{
+      console.log(`data.length is 0 in status-buttons`);
+    }
+  }
+
 
   // 💰 for all the mutations below, if you want to get the list-items cache
   // updated after this query finishes the use the `onSettled` config option
